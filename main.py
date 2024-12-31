@@ -1,13 +1,16 @@
 import math
 import xml.etree.ElementTree as ET
 from abc import ABC, abstractmethod
+import os
+import shutil
 
-NAME = "3D-printed Metric Threads V3"
+FILENAME = "3DPrintedMetricV4.xml"
+NAME = "3D-printed Metric Threads V4"
 UNIT = "mm"
 ANGLE = 60.0
-SIZES = list(range(8, 51))
-PITCHES = [3.5, 5.0]
-OFFSETS = [.0, .1, .2, .4, .8]
+SIZES = list(range(3, 80))
+PITCHES = [3.5, 4, 4.5, 5.0, 5.5, 6.0, 6.5, 7, 7.5, 8.0]
+OFFSETS = [.0, .1, .2, .25, .3, .35, .4, .45, .5, .6, .7, .8, .9]
 
 
 def designator(val: float):
@@ -119,7 +122,30 @@ def generate():
                     ET.SubElement(thread_element, "TapDrill").text = "{:.4g}".format(thread.tapDrill)
 
     ET.indent(tree)
-    tree.write('3DPrintedMetricV3.xml', encoding='UTF-8', xml_declaration=True)
+    tree.write(FILENAME, encoding='UTF-8', xml_declaration=True)
 
+
+def Ask4CopyFile():
+    while True:
+        response = input("Want Copy file in Fusion360 path? (Y,N): ").strip().lower()
+        if response in ['y', 'n']:
+            return response
+        else:
+            print("Please select 'Y' for Yes or 'N' for no.")
 
 generate()
+
+# find where fusion360 thread data is
+base_path = os.path.join(os.getenv('LOCALAPPDATA'), 'Autodesk', 'webdeploy', 'Production')
+subdirs = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
+for subdir in subdirs:
+    subdir_path = os.path.join(base_path, subdir, 'Fusion', 'Server', 'Fusion', 'Configuration', 'ThreadData')
+    if os.path.exists(subdir_path) :
+        print("Found Autodesk Fusion 360 Folder in:", subdir_path)
+        action = Ask4CopyFile()
+        if action == 'y':
+            destination = os.path.join(subdir_path, os.path.basename(FILENAME))
+            shutil.copy2(FILENAME, destination)
+        break
+else:
+    print("No Fusion360 Thread Path found.")
