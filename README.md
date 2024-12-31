@@ -55,6 +55,9 @@ This will create a file named `3DPrintedMetricV4.xml` in the working directory w
 
 After generating the file, the script tries to find the Fusion360 directory. If it finds the directory, it asks for permission to automatically copy the file to this location.
 
+
+![ask_to_copy_generated_file](ask_copy.jpg)
+
 To customize the generated profiles, simply edit the values defined at the top of `main.py`.
 
 ```python
