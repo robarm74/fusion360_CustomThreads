@@ -145,7 +145,11 @@ for subdir in subdirs:
         action = Ask4CopyFile()
         if action == 'y':
             destination = os.path.join(subdir_path, os.path.basename(FILENAME))
-            shutil.copy2(FILENAME, destination)
+            try:
+                shutil.copy2(FILENAME, destination)
+                print("File copied Succesful.")
+            except :
+                print("Error, no file was copy.")
         break
 else:
     print("No Fusion360 Thread Path found.")
